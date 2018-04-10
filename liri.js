@@ -1,76 +1,86 @@
-//Get data
+var dotenv = require('dotenv');
 require("dotenv").config();
 var keys = require('./keys.js');
 var request = require('request');
-var twitter = require('twitter');
-var spotify = require('spotify');
+var Twitter = require('twitter');
+var Spotify = require('node-spotify-api');
 var fs = require('fs');
 
-var spotify = new Spotify({
-      id: process.env.SPOTIFY_ID,
-      secret: process.env.SPOTIFY_SECRET
+var spotify = new Spotify(keys.spotify);
+
+function twitterSelection () {
+var client = new Twitter(keys.twitter);
+var params = {screen_name: 'plum951'};
+client.get('statuses/user_timeline', params, function(error, tweets, response) {
+    if (!error) {
+        for (var tweet of tweets) { 
+            console.log(tweet.text + '\n');
+        }
+    }
+
 });
-
-
-var client = new Twitter({
-      consumer_key: process.env.TWITTER_CONSUMER_KEY,
-      consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
-      access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
-      access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
-});
-
-
-//log text
-var filename = '/log.txt';
-var log = require('simple-node-logger').createSimpleFileLogger(filename);
-log.setLevel('all');
-
-//Arguments
-var num1 = process.argv[2];
-var num2 = process.argv[3];
-
-
-//Switch Actions
-function switching(num1, num2) {
-      switch (num1) {
-            case "my-tweets":
-                  getTweets();
-                  break;
-
-            case "spotify-this-song":
-                  getSpotify(num2);
-                  break;
-
-            case "movie-this":
-                  getOMDB(num2);
-                  break;
-
-            case "do-what-it-says":
-                  getWhatItSays();
-                  break;
-
-            default:
-                  console.log("{Please enter a command: my-tweets, spotify-this-song, movie-this, do-what-it-says}");
-                  break;
-      }
 }
+function movieThis(movie) {
 
-//Twitter
-function myTweets() {
+	var queryUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=ff6074ca";
 
-      var params = { screen_name: 'plum951' };
-      client.get('statuses/user_timeline', params, function (error, tweets, response) {
-            if (!error) {
-                  for (var i = 0; i < tweets.length; i++) {
+	request(queryUrl, function(error, response, body) {
+		if (!movie){
+        	movie = 'Mr Nobody';
+    	}
+		if (!error && response.statusCode === 200) {
 
-                        var date = tweets[i].created_at;
-                        console.log("@Plum951: " + tweets[i].text + " Created At: " + date.substring(0, 19));
-                        console.log("----------");
-                        fs.appendFile('log.txt', "@Plum951: " + tweets[i].text + " Created At: " + date.substring(0, 19));
-                        fs.appendFile('log.txt', "----------");
-                  }
-            } else {
-                 return console.log('Error');
-            }
+		    console.log("Title: " + JSON.parse(body).Title);
+		    console.log("Release Year: " + JSON.parse(body).Year);
+		    console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
+		    console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
+		    console.log("Country: " + JSON.parse(body).Country);
+		    console.log("Language: " + JSON.parse(body).Language);
+		    console.log("Plot: " + JSON.parse(body).Plot);
+		    console.log("Actors: " + JSON.parse(body).Actors);
+		}
+	});
+};
+
+
+
+  function spotifyThis(song) {
+      spotify.search({type: 'track', query: song}, function(err, data) {
+        if (!err) {
+          for (var i = 2; i < data.tracks.items.length; i++) {
+            var spotiSelection = data.tracks.items[i];
+         
+            console.log("Artist: " + spotiSelection.artists[0].name);
+            console.log("Song: " + spotiSelection.name);
+            console.log("Preview URL: " + spotiSelection.preview_url);
+            console.log("Album: " + spotiSelection.album.name);
+            console.log("-----------------------");
+          }
+        } else {
+          console.log('Error');
+        }
       });
-}
+    }
+
+    
+  function liribot() {
+	fs.readFile('random.txt', "utf8", function(error, data){
+
+		if (error) {
+    		return console.log(error);
+  		}
+		var selection = data.split(",");
+		if (selection[0] === "spotify-this-song") {
+			var songslection = selection[1].slice(1, -1);
+			spotify(songslection);
+		} else if (selection[0] === "my-tweets") {
+			var tweeting = selection[1].slice(1, -1);
+			twitter(tweeting);
+		} else if(selection[0] === "movie-this") {
+			var movies = selection[1].slice(1, -1);
+			movie(movies);
+		} 
+		
+  	});
+
+};
