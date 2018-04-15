@@ -22,26 +22,25 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
 }
 function movieThis(movie) {
 
-	var queryUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=ff6074ca";
+  var queryUrl = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=ff6074ca";
 
-	request(queryUrl, function(error, response, body) {
-		if (!movie){
-        var	movie = 'Mr Nobody';
-    	}
-		if (!error && response.statusCode === 200) {
+  request(queryUrl, function(error, response, body) {
+    if (!movie){
+        var movie = 'Mr Nobody';
+      }
+    if (!error && response.statusCode === 200) {
 
-		    console.log("Title: " + JSON.parse(body).Title);
-		    console.log("Release Year: " + JSON.parse(body).Year);
-		    console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
-		    console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
-		    console.log("Country: " + JSON.parse(body).Country);
-		    console.log("Language: " + JSON.parse(body).Language);
-		    console.log("Plot: " + JSON.parse(body).Plot);
-		    console.log("Actors: " + JSON.parse(body).Actors);
-		}
-	});
+        console.log("Title: " + JSON.parse(body).Title);
+        console.log("Release Year: " + JSON.parse(body).Year);
+        console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
+        console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
+        console.log("Country: " + JSON.parse(body).Country);
+        console.log("Language: " + JSON.parse(body).Language);
+        console.log("Plot: " + JSON.parse(body).Plot);
+        console.log("Actors: " + JSON.parse(body).Actors);
+    }
+  });
 };
-
 
 
   function spotifyThis(song) {
@@ -64,38 +63,40 @@ function movieThis(movie) {
 
     
   function liribot() {
-	fs.readFile('random.txt', "utf8", function(error, data){
+  fs.readFile('random.txt', "utf8", function(error, data){
 
-		if (error) {
-    		return console.log(error);
-  		}
-		//var selection = data.split(",");
-		if (selection[0] === "spotify-this-song") {
-			var songslection = selection[1].slice(1, -1);
-			spotify(songslection);
-		} else if (selection[0] === "my-tweets") {
-			var tweeting = selection[1].slice(1, -1);
-			twitter(tweeting);
-		} else if(selection[0] === "movie-this") {
-			var movies = selection[1].slice(1, -1);
-			movie(movies);
-		} 
-		
-  	});
+    if (error) {
+        return console.log(error);
+      }
+    //var selection = data.split(",");
+    if (selection[0] === "spotify-this-song") {
+      var songslection = selection[1].slice(1, -1);
+      spotify(songslection);
+    } else if (selection[0] === "my-tweets") {
+      var tweeting = selection[1].slice(1, -1);
+      twitter(tweeting);
+    } else if(selection[0] === "movie-this") {
+      var movies = selection[1].slice(1, -1);
+      movie(movies);
+    } 
+    
+    });
 
 };
  if (process.argv[2]=== "my-tweets") {
-	twitterSelection();
-	
+  twitterSelection();
+  
+  
  }
  //var song = "";
  if (process.argv[2]=== "spotify-this-song") {
-	 var song = "";
-	spotifyThis(song);
-	
+   var song = "";
+  spotifyThis("");
+  
  }
  if (process.argv[2]=== "movie-this") {
-	movieThis(movie);
-	
+  movieThis("");
+  
  }
  var selection = process.argv[2];
+
