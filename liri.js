@@ -26,7 +26,7 @@ function movieThis(movie) {
 
 	request(queryUrl, function(error, response, body) {
 		if (!movie){
-        	movie = 'Mr Nobody';
+        var	movie = 'Mr Nobody';
     	}
 		if (!error && response.statusCode === 200) {
 
@@ -69,7 +69,7 @@ function movieThis(movie) {
 		if (error) {
     		return console.log(error);
   		}
-		var selection = data.split(",");
+		//var selection = data.split(",");
 		if (selection[0] === "spotify-this-song") {
 			var songslection = selection[1].slice(1, -1);
 			spotify(songslection);
@@ -84,3 +84,18 @@ function movieThis(movie) {
   	});
 
 };
+ if (process.argv[2]=== "my-tweets") {
+	twitterSelection();
+	
+ }
+ //var song = "";
+ if (process.argv[2]=== "spotify-this-song") {
+	 var song = "";
+	spotifyThis(song);
+	
+ }
+ if (process.argv[2]=== "movie-this") {
+	movieThis(movie);
+	
+ }
+ var selection = process.argv[2];
